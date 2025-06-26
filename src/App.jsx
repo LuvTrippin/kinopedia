@@ -3,8 +3,10 @@ import Search from "./components/Search.jsx";
 import {useEffect, useState} from "react";
 import Preloader from "./components/Preloader.jsx";
 import MovieCard from "./components/MovieCard.jsx";
+import {useDebounce} from "react-use";
+import {getTrendingMovies, updateSearchCount} from "./appwrite.js";
 
-const API_BASE_URL =  "https://api.themoviedb.org/3/discover/movie";
+const API_BASE_URL =  import.meta.env.VITE_API_BASE_URL;
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const API_OPTIONS = {
     method: 'GET',
@@ -19,13 +21,19 @@ const App = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const [movieList, setMovieList] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+    const [trendingMovies, setTrendingMovies] = useState([]);
 
-    const fetchMovies = async () => {
+    useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]);
+
+    const fetchMovies = async (query = '') => {
         setLoading(true);
         setErrorMessage("");
 
         try {
-            const endpoint = `${API_BASE_URL}?sort_by=popularity.desc`;
+            const endpoint = query
+                ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
+                : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
             const response = await fetch(endpoint, API_OPTIONS)
 
             if (!response.ok) {
@@ -40,7 +48,10 @@ const App = () => {
                 return;
             }
             setMovieList(data.results);
-            console.log(data.results);
+
+            if (query && data.results.length > 0) {
+                await updateSearchCount(query, data.results[0]);
+            }
         } catch (error) {
            setErrorMessage(error);
         } finally {
@@ -48,8 +59,21 @@ const App = () => {
         }
     }
 
+    const loadTrendingMovies = async () => {
+        try {
+            const movies = await getTrendingMovies();
+            setTrendingMovies(movies);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     useEffect(() => {
-        fetchMovies();
+        fetchMovies(debouncedSearchTerm);
+    }, [debouncedSearchTerm]);
+
+    useEffect(() => {
+        loadTrendingMovies();
     }, []);
 
     return (
@@ -63,8 +87,22 @@ const App = () => {
                 <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
                 </header>
 
+                {trendingMovies.length > 0 ? (
+                    <section className="trending">
+                        <h2>Лучшее</h2>
+                        <ul>
+                            {trendingMovies.map((movie, index) => (
+                                <li key={movie.$id}>
+                                    <p>{index + 1}</p>
+                                    <img src={movie.poster_url} alt={movie.title} />
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
+                ): null}
+
                 <section className="all-movies">
-                    <h2 className="mt-[42px]">Популярное</h2>
+                    <h2>Популярное</h2>
 
                     { loading ? (
                         <Preloader />
