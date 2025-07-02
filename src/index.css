@@ -18,6 +18,8 @@
     --breakpoint-xs: 480px;
 
     --background-image-hero-pattern: url("/hero-bg.png");
+
+    --container-sm: 20rem;
 }
 
 @layer base {
@@ -57,8 +59,31 @@
         @apply px-5 py-12 xs:p-10 max-w-7xl mx-auto flex flex-col relative z-10;
     }
 
+    .rating-in-full-view {
+        @apply flex flex-row gap-x-1 items-baseline;
+    }
+
+    .movie-info {
+
+        & p {
+          @apply text-white mt-5 text-[20px];
+        }
+
+        & h2 {
+            @apply mt-10;
+        }
+
+        & .sub-title {
+            @apply font-bold;
+        }
+
+        & .movie-description {
+            @apply xl:px-35 xs:px-7;
+        }
+    }
+
     .trending {
-        @apply mt-20;
+        @apply mt-20 space-y-9;
 
         & ul {
             @apply flex flex-row overflow-y-auto gap-5 -mt-10 w-full hide-scrollbar;
@@ -112,8 +137,16 @@
             @apply text-white font-bold text-base line-clamp-1;
         }
 
-        & .content {
+        & .content-main {
             @apply mt-2 flex flex-row items-center flex-wrap gap-2;
+        }
+
+        & .content {
+            @apply flex flex-row items-center justify-between;
+        }
+
+        & .add-to-fav {
+            @apply mt-2 cursor-pointer;
         }
 
         & .rating {
