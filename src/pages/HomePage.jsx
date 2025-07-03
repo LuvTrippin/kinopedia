@@ -5,6 +5,8 @@ import MovieCard from "../components/MovieCard.jsx";
 import {useDebounce} from "react-use";
 import {getTrendingMovies, updateSearchCount} from "../appwrite.js";
 import useFavorites from "../hooks/useFavorites.js";
+import {Link} from "react-router-dom";
+import Navigation from "../components/Navigation.jsx";
 
 const API_BASE_URL =  import.meta.env.VITE_API_BASE_URL;
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -80,6 +82,7 @@ const HomePage = () => {
 
     return (
         <main className="App">
+            <Navigation />
             <div className="pattern" />
 
             <div className="wrapper">

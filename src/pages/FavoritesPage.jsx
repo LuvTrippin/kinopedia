@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import MovieCard from "../components/MovieCard";
 import useFavorites from "../hooks/useFavorites";
 import Preloader from "../components/Preloader";
+import Navigation from "../components/Navigation.jsx";
 
 const FavoritesPage = () => {
     const { getFavoriteMovies } = useFavorites();
@@ -17,7 +18,8 @@ const FavoritesPage = () => {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-8 text-center">Избранные фильмы</h1>
+            <Navigation />
+            <h1 className="mb-8 text-center">Избранные фильмы</h1>
 
             {favoriteMovies.length === 0 ? (
                 <div className="text-center py-12">

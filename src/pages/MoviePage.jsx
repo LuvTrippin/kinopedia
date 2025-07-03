@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import Preloader from "../components/Preloader.jsx";
 import {useParams} from "react-router-dom";
+import Navigation from "../components/Navigation.jsx";
 
 const API_BASE_URL =  import.meta.env.VITE_API_BASE_URL;
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -52,6 +53,7 @@ const MoviePage = () => {
 
     return (
         <main className="Movie">
+            <Navigation />
             <div className="pattern" />
 
             <div className="wrapper">
