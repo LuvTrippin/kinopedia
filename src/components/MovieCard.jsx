@@ -4,9 +4,18 @@ import {Link} from "react-router-dom";
 
 const IMAGE_BASE_URL = import.meta.env.VITE_TMDB_IMAGE_BASE_URL;
 
-const MovieCard = ({ movie: { title, poster_path, vote_average, release_date, original_language, id } }) => {
-    const [isFavorite, setIsFavorite] = React.useState(false);
-
+const MovieCard = ({
+                       movie: {
+                           title,
+                           poster_path,
+                           vote_average,
+                           release_date,
+                           original_language,
+                           id
+                       },
+                       isFavorite,
+                       toggleFavorite,
+}) => {
     return (
         <div className="movie-card">
             <Link className="relative" to={`/movie/${id}`}>
@@ -30,9 +39,16 @@ const MovieCard = ({ movie: { title, poster_path, vote_average, release_date, or
 
                     <p
                         className="add-to-fav"
-                        onClick={() => setIsFavorite(!isFavorite)}
+                        onClick={() => toggleFavorite({
+                            title,
+                            poster_path,
+                            vote_average,
+                            release_date,
+                            original_language,
+                            id
+                        })}
                     >
-                        {isFavorite ? '❤️': '🤍'}
+                        {isFavorite(id) ? '❤️': '🤍'}
                     </p>
                 </div>
             </div>

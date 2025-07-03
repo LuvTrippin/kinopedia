@@ -4,6 +4,7 @@ import Preloader from "../components/Preloader.jsx";
 import MovieCard from "../components/MovieCard.jsx";
 import {useDebounce} from "react-use";
 import {getTrendingMovies, updateSearchCount} from "../appwrite.js";
+import useFavorites from "../hooks/useFavorites.js";
 
 const API_BASE_URL =  import.meta.env.VITE_API_BASE_URL;
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -22,6 +23,7 @@ const HomePage = () => {
     const [loading, setLoading] = useState(false);
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
     const [trendingMovies, setTrendingMovies] = useState([]);
+    const { isFavorite, toggleFavorite } = useFavorites();
 
     useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]);
 
@@ -75,6 +77,7 @@ const HomePage = () => {
         loadTrendingMovies();
     }, []);
 
+
     return (
         <main className="App">
             <div className="pattern" />
@@ -83,7 +86,10 @@ const HomePage = () => {
                 <header className="App-header">
                     <img src="./hero.png" alt="banner" />
                     <h1>Здесь ты можешь найти <span className="text-gradient">фильм</span> по душе!</h1>
-                    <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+                    <Search
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                    />
                 </header>
 
                 {trendingMovies.length > 0 ? (
@@ -110,7 +116,12 @@ const HomePage = () => {
                     ) : (
                         <ul>
                             {movieList.map((movie) => (
-                                <MovieCard key={movie.id} movie={movie} />
+                                <MovieCard
+                                    key={movie.id}
+                                    movie={movie}
+                                    isFavorite={isFavorite}
+                                    toggleFavorite={toggleFavorite}
+                                />
                             ))}
                         </ul>
                     )}

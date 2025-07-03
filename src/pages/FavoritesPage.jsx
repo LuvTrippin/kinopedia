@@ -1,122 +1,42 @@
-import Search from "../components/Search.jsx";
-import {useEffect, useState} from "react";
-import Preloader from "../components/Preloader.jsx";
-import MovieCard from "../components/MovieCard.jsx";
-import {useDebounce} from "react-use";
-import {getTrendingMovies, updateSearchCount} from "../appwrite.js";
-
-const API_BASE_URL =  import.meta.env.VITE_API_BASE_URL;
-const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
-const API_OPTIONS = {
-    method: 'GET',
-    headers: {
-        accept: 'application/json',
-        Authorization: `Bearer ${API_KEY}`
-    }
-};
+import { useEffect, useState } from "react";
+import MovieCard from "../components/MovieCard";
+import useFavorites from "../hooks/useFavorites";
+import Preloader from "../components/Preloader";
 
 const FavoritesPage = () => {
-    const [searchTerm, setSearchTerm] = useState("");
-    const [errorMessage, setErrorMessage] = useState("");
-    const [movieList, setMovieList] = useState([]);
+    const { getFavoriteMovies } = useFavorites();
     const [loading, setLoading] = useState(false);
-    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-    const [trendingMovies, setTrendingMovies] = useState([]);
-
-    useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]);
-
-    const fetchMovies = async (query = '') => {
-        setLoading(true);
-        setErrorMessage("");
-
-        try {
-            const endpoint = query
-                ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
-                : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
-            const response = await fetch(endpoint, API_OPTIONS)
-
-            if (!response.ok) {
-                throw new Error("Something went wrong");
-            }
-
-            const data = await response.json();
-
-            if (data.Response === false) {
-                setErrorMessage(data.error || "Something went wrong");
-                setMovieList([]);
-                return;
-            }
-            setMovieList(data.results);
-
-            if (query && data.results.length > 0) {
-                await updateSearchCount(query, data.results[0]);
-            }
-        } catch (error) {
-            setErrorMessage(error);
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    const loadTrendingMovies = async () => {
-        try {
-            const movies = await getTrendingMovies();
-            setTrendingMovies(movies);
-        } catch (error) {
-            console.log(error);
-        }
-    }
+    const [favoriteMovies, setFavoriteMovies] = useState([]);
+    const { isFavorite, toggleFavorite } = useFavorites();
 
     useEffect(() => {
-        fetchMovies(debouncedSearchTerm);
-    }, [debouncedSearchTerm]);
-
-    useEffect(() => {
-        loadTrendingMovies();
+        setFavoriteMovies(getFavoriteMovies());
     }, []);
 
+    if (loading) return <Preloader />;
+
     return (
-        <main className="App">
-            <div className="pattern" />
+        <div className="container mx-auto px-4 py-8">
+            <h1 className="text-3xl font-bold mb-8 text-center">Избранные фильмы</h1>
 
-            <div className="wrapper">
-                <header className="App-header">
-                    <img src="./hero.png" alt="banner" />
-                    <h1>Здесь ты можешь найти <span className="text-gradient">фильм</span> по душе!</h1>
-                    <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-                </header>
-
-                {trendingMovies.length > 0 ? (
-                    <section className="trending">
-                        <h2>Лучшее</h2>
-                        <ul>
-                            {trendingMovies.map((movie, index) => (
-                                <li key={movie.$id}>
-                                    <p>{index + 1}</p>
-                                    <img src={movie.poster_url} alt={movie.title} />
-                                </li>
-                            ))}
-                        </ul>
-                    </section>
-                ): null}
-
-                <section className="all-movies">
-                    <h2>Популярное</h2>
-
-                    { loading ? (
-                        <Preloader />
-                    ) : errorMessage ? (
-                        <p className="text-red-500">{errorMessage}</p>
-                    ) : (
-                        <ul>
-                            {movieList.map((movie) => (
-                                <MovieCard key={movie.id} movie={movie}/>
-                            ))}
-                        </ul>
-                    )}
-                </section>
-            </div>
-        </main>
+            {favoriteMovies.length === 0 ? (
+                <div className="text-center py-12">
+                    <p className="text-gray-500 text-lg mb-4">Вы еще не добавили ни одного фильма в избранное</p>
+                    <p className="text-gray-400">Найдите интересные фильмы и добавьте их с помощью ❤️</p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {favoriteMovies.map(movie => (
+                        <MovieCard
+                            key={movie.id}
+                            movie={movie}
+                            isFavorite={isFavorite}
+                            toggleFavorite={toggleFavorite}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
     );
 };
 

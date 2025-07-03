@@ -37,7 +37,6 @@ const MoviePage = () => {
                 setMovie({});
                 return;
             }
-            console.log(data);
             setMovie(data);
 
         } catch (error) {
