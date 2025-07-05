@@ -8,7 +8,7 @@ const Navigation = () => {
                 <div className="flex justify-start py-4">
                     <div className="flex space-x-8 bg-gray-800/80 backdrop-blur-sm rounded-full px-6 py-3 shadow-xl border border-gray-700">
                         <Link
-                            to="/kinopedia/"
+                            to="/"
                             className="relative px-3 py-2 text-white font-medium group"
                         >
                             <span className="relative z-10">Главная</span>
@@ -16,7 +16,7 @@ const Navigation = () => {
                         </Link>
 
                         <Link
-                            to="/kinopedia/favorites"
+                            to="/favorites"
                             className="relative px-3 py-2 text-white font-medium group"
                         >
                             <span className="relative z-10">Избранное</span>
