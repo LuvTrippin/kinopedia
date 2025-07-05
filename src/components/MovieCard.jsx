@@ -18,7 +18,7 @@ const MovieCard = ({
 }) => {
     return (
         <div className="movie-card">
-            <Link className="relative" to={`/movie/${id}`}>
+            <Link className="relative" to={`/kinopedia/movie/${id}`}>
             <img src={poster_path ? `${IMAGE_BASE_URL}${poster_path}` : '/no-movie.png'} alt={title} />
             </Link>
 

@@ -7,7 +7,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 const App = () => {
     return (
-        <Router>
+        <Router basename="/kinopedia">
             <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="movie/:id" element={<MoviePage />} />
