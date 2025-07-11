@@ -2,7 +2,7 @@
 
 ## Стек:
 
-- React.js
+- React
 - React router
 - TailwindCSS
 - Vite
