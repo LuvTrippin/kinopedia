@@ -4,6 +4,7 @@
 
 - React
 - React router
+- TypeScript
 - TailwindCSS
 - Vite
 - AppWrite
