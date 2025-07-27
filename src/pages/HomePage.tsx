@@ -1,11 +1,12 @@
-import Search from "../components/Search.jsx";
-import {useEffect, useState} from "react";
-import Preloader from "../components/Preloader.jsx";
-import MovieCard from "../components/MovieCard.jsx";
+import Search from "../components/Search.tsx";
+import React, {useEffect, useState} from "react";
+import Preloader from "../components/Preloader.tsx";
+import MovieCard from "../components/MovieCard.tsx";
 import {useDebounce} from "react-use";
-import {getTrendingMovies, updateSearchCount} from "../appwrite.js";
-import useFavorites from "../hooks/useFavorites.js";
-import Navigation from "../components/Navigation.jsx";
+import {getTrendingMovies, updateSearchCount} from "@/appwrite";
+import useFavorites from "../hooks/useFavorites";
+import Navigation from "../components/Navigation.tsx";
+import {Movie} from "@/types/movie"
 
 const API_BASE_URL =  import.meta.env.VITE_API_BASE_URL;
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -17,13 +18,19 @@ const API_OPTIONS = {
     }
 };
 
+interface ApiResponse {
+    results: Movie[];
+    Response?: boolean,
+    error?: string,
+}
+
 const HomePage = () => {
-    const [searchTerm, setSearchTerm] = useState("");
-    const [errorMessage, setErrorMessage] = useState("");
-    const [movieList, setMovieList] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-    const [trendingMovies, setTrendingMovies] = useState([]);
+    const [searchTerm, setSearchTerm] = useState<string>("");
+    const [errorMessage, setErrorMessage] = useState<string>("");
+    const [movieList, setMovieList] = useState<Movie[] | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>("");
+    const [trendingMovies, setTrendingMovies] = useState<Movie[]>([]);
     const { isFavorite, toggleFavorite } = useFavorites();
 
     useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]);
@@ -42,7 +49,7 @@ const HomePage = () => {
                 throw new Error("Something went wrong");
             }
 
-            const data = await response.json();
+            const data: ApiResponse = await response.json();
 
             if (data.Response === false) {
                 setErrorMessage(data.error || "Something went wrong");
@@ -79,6 +86,8 @@ const HomePage = () => {
     }, []);
 
 
+    if (!movieList) return <div>Ошибка при загрузке фильмов</div>;
+
     return (
         <main className="App">
             <Navigation />
@@ -99,7 +108,7 @@ const HomePage = () => {
                         <h2>Лучшее</h2>
                         <ul>
                             {trendingMovies.map((movie, index) => (
-                                <li key={movie.$id}>
+                                <li key={movie.id}>
                                     <p>{index + 1}</p>
                                     <img src={movie.poster_url} alt={movie.title} />
                                 </li>

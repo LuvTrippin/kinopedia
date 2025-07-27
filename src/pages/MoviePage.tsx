@@ -1,10 +1,12 @@
 import React, {useEffect, useState} from "react";
-import Preloader from "../components/Preloader.jsx";
+import Preloader from "../components/Preloader.tsx";
 import {useParams} from "react-router-dom";
-import Navigation from "../components/Navigation.jsx";
+import Navigation from "../components/Navigation.tsx";
+import {Movie} from "@/types/movie";
 
 const API_BASE_URL =  import.meta.env.VITE_API_BASE_URL;
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const IMAGE_BASE_URL = import.meta.env.VITE_TMDB_IMAGE_BASE_URL;
 const API_OPTIONS = {
     method: 'GET',
     headers: {
@@ -12,13 +14,12 @@ const API_OPTIONS = {
         Authorization: `Bearer ${API_KEY}`
     }
 };
-const IMAGE_BASE_URL = import.meta.env.VITE_TMDB_IMAGE_BASE_URL;
 
-const MoviePage = () => {
-    const { id } = useParams();
-    const [errorMessage, setErrorMessage] = useState("");
-    const [movie, setMovie] = useState({});
-    const [loading, setLoading] = useState(false);
+const MoviePage: React.FC = () => {
+    const { id } = useParams<{ id: string }>();
+    const [errorMessage, setErrorMessage] = useState<string>("");
+    const [movie, setMovie] = useState<Movie | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
 
     const fetchMovie = async () => {
         setLoading(true);
@@ -31,17 +32,15 @@ const MoviePage = () => {
                 throw new Error("Something went wrong");
             }
 
-            const data = await response.json();
+            const data: Movie = await response.json();
 
-            if (data.Response === false) {
-                setErrorMessage(data.error || "Something went wrong");
-                setMovie({});
-                return;
+            if (!data.title) {
+                throw new Error("Movie data is incomplete");
             }
             setMovie(data);
 
         } catch (error) {
-            setErrorMessage(error);
+            setErrorMessage(error instanceof Error ? error.message : "Unknown error");
         } finally {
             setLoading(false);
         }
@@ -50,6 +49,8 @@ const MoviePage = () => {
     useEffect(() => {
         fetchMovie();
     }, [id]);
+
+    if (!movie) return <div className="text-center mt-10">Фильм не найден</div>;
 
     return (
         <main className="Movie">

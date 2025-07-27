@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from "react";
-import MovieCard from "../components/MovieCard";
+import MovieCard from "../components/MovieCard.js";
 import useFavorites from "../hooks/useFavorites";
-import Preloader from "../components/Preloader";
-import Navigation from "../components/Navigation.jsx";
+import Preloader from "../components/Preloader.js";
+import Navigation from "../components/Navigation.tsx";
+import {Movie} from "@/types/movie";
 
 const FavoritesPage = () => {
-    const { getFavoriteMovies } = useFavorites();
-    const [loading, setLoading] = useState(false);
-    const [favoriteMovies, setFavoriteMovies] = useState([]);
-    const { isFavorite, toggleFavorite } = useFavorites();
+    const [loading, setLoading] = useState<boolean>(false);
+    const [favoriteMovies, setFavoriteMovies] = useState<Movie[] | null>(null);
+    const { isFavorite, toggleFavorite, getFavoriteMovies } = useFavorites();
 
     useEffect(() => {
+        setLoading(true);
         setFavoriteMovies(getFavoriteMovies());
+        setLoading(false);
     }, []);
+
+    if (!favoriteMovies) return <div>Вы пока не добавили ни одного фильма</div>;
 
     return (
         <main className="App">

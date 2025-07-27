@@ -1,7 +1,7 @@
 import './App.css'
-import FavoritesPage from './pages/FavoritesPage.jsx';
-import HomePage from './pages/HomePage.jsx';
-import MoviePage from './pages/MoviePage.jsx';
+import FavoritesPage from './pages/FavoritesPage.js';
+import HomePage from './pages/HomePage.js';
+import MoviePage from './pages/MoviePage.js';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 
